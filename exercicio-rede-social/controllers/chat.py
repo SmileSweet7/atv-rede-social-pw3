@@ -1,0 +1,28 @@
+from flask import request
+from flask_socketio import emit
+
+
+def init_app(socketio):
+    # Eventos a serem disparados pelo servidor
+    # Usuário conecta
+    @socketio.on("connect")
+    def handle_connect():
+        print(f"O usuário com a ID: {request.sid} se conectou.")
+
+    # Usuário desconecta
+    @socketio.on("disconnect")
+    def handle_disconnect():
+        print(f"O usuário com a ID: {request.sid} desconectou.")
+
+    # Eventos Globais
+    # Usuário entrou no chat
+    @socketio.on("join")
+    def handle_join(data):
+        print(f"O usuário {data['nickname']} entrou no chat!")
+        emit("join", data, broadcast=True)
+
+    # Usuário envia mensagem
+    @socketio.on("msg")
+    def handle_msg(data):
+        print(data)
+        emit("showmsg", data, broadcast=True)
